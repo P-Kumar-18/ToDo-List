@@ -1,28 +1,32 @@
 const completeList = document.querySelector('#taskList');
-const addTask = document.querySelector('#addTask');
+const formElement = document.querySelector('#addTask');
 const errorElement = document.querySelector('#error');
-const newTask = document.querySelector('#newTask')
-
-
-let tasks = [];
-
-addTask.addEventListener('submit', (e) => {
+const newTask = document.querySelector('#newTask');
+localStorage.setItem("Tasks", JSON.stringify(completeList));
+formElement.addEventListener('submit', (e) => {
+	e.preventDefault();
+	const listElements = document.querySelectorAll('#taskList li');
 	let errorMessage = [];
-	
-	if (newTask.value === '' || newTask.value == null) {
-		errorMessage.push('Fill in the task.');
+	let listItem = [];
+	for (let i = 0;i < listElements.length; i++) {
+		listItem.push(listElements[i].textContent.trim());
 	}
-	const listElement = document.querySelectorAll('#taskList li');
-	listElement.forEach(item => {
-	tasks.push(item.textContent);
-});
 	
-	if (tasks.some(item => item == newTask.value)) {
-		errorMessage.push('Task is already in List.');
+	for (let i = 0; i < listItem.length; i++) {
+		if ( newTask.value == listItem[i]) {
+			errorMessage.push('Item already in List.');
+			break;
+		}
 	}
 	
 	if (errorMessage.length > 0) {
-		e.preventDefault();
 		errorElement.innerText = errorMessage.join(', ');
+	} else {
+		let newListItem = document.createElement('li');
+		newListItem.textContent = newTask.value.trim();
+		completeList.appendChild(newListItem);
+		newTask.value = '';
+		errorElement.innerText = '';
 	}
+	console.log (completeList);
 });
