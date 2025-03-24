@@ -29,6 +29,7 @@ if (formElementAdd) {
 		
 		let newTaskValue = newTask.value.trim();
 		if (tasks.includes(newTaskValue)) {
+			errorElementAdd.style.color = 'darkred';
 			errorElementAdd.textContent = 'Task already in list.';
 			newTask.value = '';
 			return;
@@ -52,6 +53,7 @@ if (formElementRemove) {
 		
 		let delTaskValue = delTask.value.trim();
 		if (!tasks.includes(delTaskValue)) {
+			errorElementRemove.style.color = 'darkred';
 			errorElementRemove.textContent = 'Task not in list.';
 			newTask.value = '';
 			return;
