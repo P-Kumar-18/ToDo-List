@@ -1,32 +1,73 @@
 const completeList = document.querySelector('#taskList');
-const formElement = document.querySelector('#addTask');
-const errorElement = document.querySelector('#error');
+const formElementAdd = document.querySelector('#addTask');
+const formElementRemove = document.querySelector('#removeTask');
+const errorElementAdd = document.querySelector('#errorAdd');
+const errorElementRemove = document.querySelector('#errorRemove');
 const newTask = document.querySelector('#newTask');
-localStorage.setItem("Tasks", JSON.stringify(completeList));
-formElement.addEventListener('submit', (e) => {
-	e.preventDefault();
-	const listElements = document.querySelectorAll('#taskList li');
-	let errorMessage = [];
-	let listItem = [];
-	for (let i = 0;i < listElements.length; i++) {
-		listItem.push(listElements[i].textContent.trim());
-	}
+const delTask = document.querySelector('#delTask');
+const remAll = document.querySelector('#remAll');
+
+if (completeList) {
+	console.log ('Loaded home.html');
 	
-	for (let i = 0; i < listItem.length; i++) {
-		if ( newTask.value == listItem[i]) {
-			errorMessage.push('Item already in List.');
-			break;
-		}
-	}
+	let tasks = JSON.parse(localStorage.getItem("Tasks"));
 	
-	if (errorMessage.length > 0) {
-		errorElement.innerText = errorMessage.join(', ');
-	} else {
+	tasks.forEach(taskText => {
 		let newListItem = document.createElement('li');
-		newListItem.textContent = newTask.value.trim();
+		newListItem.textContent = taskText;
 		completeList.appendChild(newListItem);
-		newTask.value = '';
-		errorElement.innerText = '';
-	}
-	console.log (completeList);
-});
+	});
+}
+
+if (formElementAdd) {
+	console.log ('Loaded addTask.html');
+	
+	formElementAdd.addEventListener('submit', (e) => {
+		e.preventDefault();
+		
+		let tasks = JSON.parse(localStorage.getItem("Tasks")) || [];
+		
+		let newTaskValue = newTask.value.trim();
+		if (tasks.includes(newTaskValue)) {
+			errorElementAdd.textContent = 'Task already in list.';
+			newTask.value = '';
+			return;
+		} else {
+			tasks.push(newTaskValue);
+			localStorage.setItem ("Tasks", JSON.stringify(tasks));
+			newTask.value = '';
+			errorElementAdd.style.color = 'green';
+			errorElementAdd.innerText = 'Task Added.';
+		}
+	});
+}
+
+if (formElementRemove) {
+	console.log ('Loaded removeTask.');
+	
+	formElementRemove.addEventListener('submit', (e) => {
+		e.preventDefault();
+		
+		let tasks = JSON.parse(localStorage.getItem("Tasks")) || [];
+		
+		let delTaskValue = delTask.value.trim();
+		if (!tasks.includes(delTaskValue)) {
+			errorElementRemove.textContent = 'Task not in list.';
+			newTask.value = '';
+			return;
+		} else {
+			tasks = tasks.filter(task => task !== delTaskValue);
+			localStorage.setItem ("Tasks", JSON.stringify(tasks));
+			delTask.value = '';
+			errorElementRemove.style.color = 'green';
+			errorElementRemove.innerText = 'Task Removed.';
+		}
+	});
+	
+	remAll.addEventListener('click', (e) => {
+		e.preventDefault();
+		
+		localStorage.removeItem("Tasks");
+		completeList.innerHTML = '';
+	});
+}
