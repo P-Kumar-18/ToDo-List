@@ -55,13 +55,19 @@ h2 {
 	bottom:0;
 	font-size:20px;
 }
-button {
+.submit {
 	margin-top:20px;
 	background-color:DarkSlateGray;
 	height:40px;
 	width:60px;
 	overflow:auto;
 	border-radius:50px;
+}
+.toggleList {
+	background-color:red;
+	height:40px;
+	width:40px;
+	overflow:auto;
 }
 .taskClass {
 	text-align:left-side;
