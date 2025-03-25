@@ -10,36 +10,50 @@ const remAll = document.querySelector('#remAll');
 if (completeList) {
 	console.log ('Loaded home.html');
 	
-	let tasks = JSON.parse(localStorage.getItem("Tasks"));
+	let tasks = JSON.parse(localStorage.getItem("Tasks")) || [];
+	let taskStates = JSON.parse(localStorage.getItem("TaskStates")) || {};
 	
 	tasks.forEach(taskText => {
-		let newListItem = document.createElement('li');
-		newListItem.textContent = taskText;
-		let buttonList = document.createElement('Button');
-		buttonList.innerHTML = '<span class = "toggleList" style = "color: red; margin-right: 20px">UF</span>';
-		newListItem.appendChild(buttonList);
-		completeList.appendChild(newListItem);
-	});
+    let newListItem = document.createElement("li");
+    newListItem.textContent = taskText;
+
+    let buttonList = document.createElement("button");
+	buttonList.classList.add("toggleList");
+    let state = taskStates[taskText] || "UF";
+    buttonList.textContent = state;
+    buttonList.style.backgroundColor = state === "UF" ? "red" : "green";
+    buttonList.style.color = state === "UF" ? "red" : "green";
+
+    newListItem.style.color = state === "UF" ? "black" : "gray"; 
+
+    newListItem.appendChild(buttonList);
+    completeList.appendChild(newListItem);
+});
+
 	
 	completeList.addEventListener("click", (e) => {
 		if (e.target.classList.contains("toggleList")) {
-			let newList = e.target.closest("li");
+			let listItem = e.target.closest("li");
+			let taskText = listItem.firstChild.textContent.trim();  
+			let taskStates = JSON.parse(localStorage.getItem("TaskStates")) || {}; 
+
 			if (e.target.textContent === "UF") {
 				
 				e.target.textContent = "FF";
-				e.target.style.backgroundColor = "green"; 
-				e.target.style.marginLeft = "20px"; 
-				e.target.style.marginRight = "0px"; 
+				e.target.style.backgroundColor = "green";  
 				e.target.style.color = "green"; 
-				newList.style.color = "A9A9A9";
+				listItem.style.color = "A9A9A9";
+				
+				taskStates[taskText] = "FF";
 			} else {
 				e.target.textContent = "UF";
 				e.target.style.backgroundColor = "red"; 
-				e.target.style.marginLeft = "0px"; 
-				e.target.style.marginRight = "20px";
 				e.target.style.color = "red";
-				newList.style.color = "black";				
+				listItem.style.color = "black";
+
+				taskStates[taskText] = "UF";
 			}
+			localStorage.setItem("TaskStates", JSON.stringify(taskStates));
 		}
 	});
 }
@@ -51,6 +65,7 @@ if (formElementAdd) {
 		e.preventDefault();
 		
 		let tasks = JSON.parse(localStorage.getItem("Tasks")) || [];
+		let taskStates = JSON.parse(localStorage.getItem("TaskStates")) || {};
 		
 		let newTaskValue = newTask.value.trim();
 		if (tasks.includes(newTaskValue)) {
@@ -61,6 +76,9 @@ if (formElementAdd) {
 		} else {
 			tasks.push(newTaskValue);
 			localStorage.setItem ("Tasks", JSON.stringify(tasks));
+			taskStates[newTaskValue] = "UF"; 
+			localStorage.setItem("TaskStates", JSON.stringify(taskStates));
+
 			newTask.value = '';
 			errorElementAdd.style.color = 'green';
 			errorElementAdd.innerText = 'Task Added.';
